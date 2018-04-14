@@ -1,10 +1,8 @@
 //Initialise Map & coordinates
-var map = L.map('mapid').setView([51.505, -0.09], 13);
+var mymap = L.map('mapid').setView([0, 0], 1);
 
 //Select map tiles
-L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={pk.eyJ1IjoiYWxsdXJiYXNzIiwiYSI6ImNqZnplOWJzejB5ejYzM3BjaWs0Z3Z3Zm4ifQ.HukfGruu-7X5fPiYvk3BmA}', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    accessToken: 'your.mapbox.access.token'
-}).addTo(mymap);
+var Esri_WorldGrayCanvas = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+{attribution:'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ', maxZoom: 16 });
+
+Esri_WorldGrayCanvas.addTo(mymap);
