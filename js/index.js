@@ -85,6 +85,9 @@ class Map {
 	addClickEvent(newFunction) {
 		this.content.on('click', newFunction);
 	}
+	addEvent(eventName, func) {
+		this.content.on(eventName, func);
+	}
 };
 
 var myMap = new Map("map", 51.505, -.09, 13);
