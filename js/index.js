@@ -49,7 +49,7 @@ class Map {
 		);
 		console.log("Popup added at position " + [posx, posy])
 	}
-	attachPopup(category, index, content) {
+	attachPopup(category, index, content, opened) {
 		if (index < 0) {
 			console.error("The index must be superior to 0");
 			return;
@@ -60,21 +60,21 @@ class Map {
 					console.error("The given index " + index + " is higher than " + this.markers.length);
 					return;
 				} else
-					this.markers[index].bindPopup(content);
+					opened ? this.markers[index].bindPopup(content).openPopup() : this.markers[index].bindPopup(content);
 				break;
 			case "circle":
 				if (this.circles.length - 1 < index) {
 					console.error("The given index " + index + " is higher than " + this.circles.length);
 					return;
 				} else
-					this.circles[index].bindPopup(content);
+					opened ? this.circles[index].bindPopup(content).openPopup() : this.circles[index].bindPopup(content);
 				break;
 			case "polygon":
 				if (this.polygons.length - 1 < index) {
 					console.error("The given index " + index + " is higher than " + this.polygons.length);
 					return;
 				} else
-					this.polygons[index].bindPopup(content);
+					opened ? this.polygons[index].bindPopup(content).openPopup() : this.polygons[index].bindPopup(content);
 				break;
 			default:
 				console.error("The popup category must be: marker, circle or polygon");
@@ -93,6 +93,7 @@ myMap.addPolygon([
 	[51.51, -0.047]
 ]);
 myMap.addPopup(51.5, -0.09, "<b>I am a standalone popup.</b>");
-myMap.attachPopup("sesk", 0, "Free Palestine"); // invalid category
-myMap.attachPopup("marker", -1, "Free Palestine"); // invalid index
-myMap.attachPopup("marker", 0, "Free Palestine");
+myMap.attachPopup("sesk", 0, "Free Palestine", true); // invalid category
+myMap.attachPopup("marker", -1, "Free Palestine", true); // invalid index
+myMap.attachPopup("circle", 0, "Free Palestine", true);
+myMap.attachPopup("polygon", 0, "Free Palestine", false);
