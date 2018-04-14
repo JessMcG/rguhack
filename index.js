@@ -57,9 +57,9 @@ function distanceLocLoc(loc1, loc2) {
     let dist = distanceLocLoc(aberdeen.location, firstPosition.location);
     console.log(`${vessel.Name} was ${dist | 0}m away from ${aberdeen.town} on the ${firstRecvTime}.`);
 
-    // How to get all the position of the vessel around Aberden
+    // How to get all the position of the vessel around aberdeen
     // as of how to make a geospatial request
-    let positionsNearAberden = await cPositions.find({
+    let positionsNearaberdeen = await cPositions.find({
         MMSI: vessel.MMSI,
         location: {
             $nearSphere: {
@@ -75,10 +75,10 @@ function distanceLocLoc(loc1, loc2) {
             $lte: moment(firstPosition.RecvTime).endOf("month").toDate()
         }
     }).sort({ RecvTime: 1 }).toArray()
-    console.log(`Vessel ${vessel.Name} was detected ${positionsNearAberden.length} times 10000m around Aberdeen during the month of ${moment(firstPosition.RecvTime).format('MMMM YYYY')}.`);
+    console.log(`Vessel ${vessel.Name} was detected ${positionsNearaberdeen.length} times 10000m around Aberdeen during the month of ${moment(firstPosition.RecvTime).format('MMMM YYYY')}.`);
 
     // here is some sanity check:
-    let check = positionsNearAberden.map((p) => distanceLocLoc(p.location, aberdeen.location)).filter((p) => p > 10000).length
+    let check = positionsNearaberdeen.map((p) => distanceLocLoc(p.location, aberdeen.location)).filter((p) => p > 10000).length
     console.log(`Should be 0: ${check}`)
 
     // close the client so that the script exits
