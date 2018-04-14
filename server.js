@@ -27,9 +27,10 @@ for (var i = 0; i < vessels.length; i++) {
   //Get latest position
   let lastPosition = _.last(positions);
   //get latitude & longitude of vessel
-  var boat_lat = ;
-  var boat_long = ;
+  var boat_lat = lastPosition.Latitude;
+  var boat_long = lastPosition.Longitude;
 
   //plot vessel on map
+  var boat = L.circle([boat_lat, boat_long], {radius: boat_length}).addTo(mymap);
 
 }
