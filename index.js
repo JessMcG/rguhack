@@ -31,6 +31,7 @@ function distanceLocLoc(loc1, loc2) {
     // How to get all vessels
     let vessels = await cVessels.find().toArray();
     console.log(`All vessels quantity: ${vessels.length}`);
+    console.log(vessels);
 
     // How to get all vessels where the description includes "supply"
     let vesselsSupply = await cVessels.find({ description: /supply/igm }).toArray();
@@ -39,6 +40,7 @@ function distanceLocLoc(loc1, loc2) {
     // How to get one specific vessel where the MMSI is 235076082
     let vessel = await cVessels.findOne({ MMSI: 235076082 });
     console.log(`Supply vessel Name: ${vessel.Name}`);
+    console.log(vessel);
 
     // How to get all positions sorted by ascendant RecvTime of the previous vessel
     let positions = await cPositions.find({ MMSI: vessel.MMSI }).sort({ RecvTime: 1 }).toArray();
@@ -55,6 +57,8 @@ function distanceLocLoc(loc1, loc2) {
 
     // How far was the vessel from aberdeen on its first position
     let dist = distanceLocLoc(aberdeen.location, firstPosition.location);
+    console.log(firstPosition);
+    console.log("firstPosition.location: "+firstPosition.location);
     console.log(`${vessel.Name} was ${dist | 0}m away from ${aberdeen.town} on the ${firstRecvTime}.`);
 
     // How to get all the position of the vessel around aberdeen
