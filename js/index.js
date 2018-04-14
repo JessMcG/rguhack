@@ -90,21 +90,35 @@ class Map {
 	}
 };
 
-var myMap = new Map("map", 51.505, -.09, 13);
-myMap.addMarker(51.5, -.09);
-myMap.addCircle(51.508, -.11, 'red', '#f03', .5, 500);
-myMap.addPolygon([
-	[51.509, -0.08],
-	[51.503, -0.06],
-	[51.51, -0.047]
-]);
-myMap.addPopup(51.5, -0.09, "<b>I am a standalone popup.</b>");
-myMap.attachPopup("sesk", 0, "Free Palestine", true); // invalid category
-myMap.attachPopup("marker", -1, "Free Palestine", true); // invalid index
-myMap.attachPopup("circle", 0, "Free Palestine", true);
-myMap.attachPopup("polygon", 0, "Free Palestine", false);
-myMap.addClickEvent(
-	function onMapClick(e) {
-		alert("You clicked the map at " + e.latlng);
+requirejs(["node_modules/mongodb/index.js"], function (mongodb) {
+	// Thanks to https://stackoverflow.com/a/21623206
+	// Distance returned is in m
+	function distance(lat1, lon1, lat2, lon2) {
+		var p = 0.017453292519943295; // Math.PI / 180
+		var c = Math.cos;
+		var a = 0.5 - c((lat2 - lat1) * p) / 2 +
+			c(lat1 * p) * c(lat2 * p) *
+			(1 - c((lon2 - lon1) * p)) / 2;
+
+		return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 	}
-);
+
+	// a wrapper to facilitate usage with [lng, lat] locations
+	function distanceLocLoc(loc1, loc2) {
+		return distance(loc1[1], loc1[0], loc2[1], loc2[0]);
+	}
+
+	(async () => {
+		const client = await MongoClient.connect('mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais');
+		const db = client.db('hackais');
+		console.log(db);
+
+		// close the client so that the script exits
+		client.close()
+	})()
+});
+/*
+	const MongoClient = require('node_modules/mongodb').MongoClient;
+	const _ = require('node_modules/lodash');
+	const moment = require('node_modules/moment');
+*/
