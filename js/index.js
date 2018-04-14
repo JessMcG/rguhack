@@ -5,6 +5,7 @@ class Map {
 		this.markers = [];
 		this.circles = [];
 		this.polygons = [];
+		this.standalonePopups = [];
 		this.maximumZoom = 18;
 		this.posx = posx;
 		this.posy = posy;
@@ -33,9 +34,28 @@ class Map {
 				radius: newRadius
 			}).addTo(this.content)
 		);
+		console.log("Circle added to map " + this.HTMLname + " at position " + [posx, posy]);
+	}
+	addPolygon(points) {
+		this.polygons.push(L.polygon(points).addTo(this.content));
+		console.log("Polygon added to map " + this.HTMLname + " at position " + [points]);
+	}
+	addPopup(posx, posy, content) {
+		this.standalonePopups.push(
+			L.popup()
+			.setLatLng([posx, posy])
+			.setContent(content)
+			.openOn(this.content)
+		);
 	}
 };
 
 var myMap = new Map("map", 51.505, -.09, 13);
 myMap.addMarker(51.5, -.09);
 myMap.addCircle(51.508, -.11, 'red', '#f03', .5, 500);
+myMap.addPolygon([
+	[51.509, -0.08],
+	[51.503, -0.06],
+	[51.51, -0.047]
+]);
+myMap.addPopup(51.5, -0.09, "<b>I am a standalone popup.</b>");
