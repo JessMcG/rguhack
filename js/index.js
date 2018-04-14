@@ -82,6 +82,9 @@ class Map {
 		}
 		console.log("Popup binded to " + category + "[" + index + "]");
 	}
+	addClickEvent(newFunction) {
+		this.content.on('click', newFunction);
+	}
 };
 
 var myMap = new Map("map", 51.505, -.09, 13);
@@ -97,3 +100,8 @@ myMap.attachPopup("sesk", 0, "Free Palestine", true); // invalid category
 myMap.attachPopup("marker", -1, "Free Palestine", true); // invalid index
 myMap.attachPopup("circle", 0, "Free Palestine", true);
 myMap.attachPopup("polygon", 0, "Free Palestine", false);
+myMap.addClickEvent(
+	function onMapClick(e) {
+		alert("You clicked the map at " + e.latlng);
+	}
+);
