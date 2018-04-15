@@ -1,6 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const _ = require('lodash');
 const moment = require('moment');
+const url = 'mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais';
 
 
 // Thanks to https://stackoverflow.com/a/21623206
@@ -20,50 +21,56 @@ function distanceLocLoc(loc1, loc2) {
     return distance(loc1[1], loc1[0], loc2[1], loc2[0]);
 }
 
-(async () => {
+MongoClient.connect(url, function(err, database){
+  if(err) throw err;
+  var db = database;
+
+  const cVessels = db.collection('vessels');
+  const cPositions = db.collection('positions');
+  const cTowns = db.collection('towns');
+
+});
     // lot of lines just to connect to a mongo database
-    const client = await MongoClient.connect('mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais');
-    const db = client.db('hackais');
-    const cVessels = db.collection('vessels');
-    const cPositions = db.collection('positions');
-    const cTowns = db.collection('towns');
+    //const client = MongoClient.connect('mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais');
+    //const db = client.database('hackais');
+
 
     // How to get all vessels
-    let vessels = await cVessels.find().toArray();
-    console.log(`All vessels quantity: ${vessels.length}`);
+    var vessels = cVessels.find().toArray();
+    console.log("All vessels quantity: "+vessels.length);
     //console.log(vessels);
 
     // How to get all vessels where the description includes "supply"
-    let vesselsSupply = await cVessels.find({ description: /supply/igm }).toArray();
-    console.log(`Supply vessels quantity: ${vesselsSupply.length}`);
+    var vesselsSupply = cVessels.find({ description: /supply/igm }).toArray();
+    console.log("Supply vessels quantity:" + vesselsSupply.length);
 
     // How to get one specific vessel where the MMSI is 235076082
-    let vessel = await cVessels.findOne({ MMSI: 235076082 });
-    console.log(`Supply vessel Name: ${vessel.Name}`);
+    var vessel = cVessels.findOne({ MMSI: 235076082 });
+    console.log("Supply vessel Name: "+vessel.Name);
     console.log(vessel);
 
     // How to get all positions sorted by ascendant RecvTime of the previous vessel
-    let positions = await cPositions.find({ MMSI: vessel.MMSI }).sort({ RecvTime: 1 }).toArray();
-    let firstPosition = _.first(positions);
-    let firstRecvTime = moment(firstPosition.RecvTime).format('LLLL');
-    let lastPosition = _.last(positions);
+    var positions = cPositions.find({ MMSI: vessel.MMSI }).sort({ RecvTime: 1 }).toArray();
+    var firstPosition = _.first(positions);
+    var firstRecvTime = moment(firstPosition.RecvTime).format('LLLL');
+    var lastPosition = _.last(positions);
     console.log(`Vessel ${vessel.MMSI} number of positions: ${positions.length}`);
     console.log(`\t first RecvTime: ${firstRecvTime}`);
     console.log(`\t last RecvTime: ${moment(lastPosition.RecvTime).format('LLLL')}`);
 
     // How to get Aberdeen location
-    let aberdeen = await cTowns.findOne({ town: /aberdeen/igm });
+    var aberdeen = cTowns.findOne({ town: /aberdeen/igm });
     console.log(aberdeen);
 
     // How far was the vessel from aberdeen on its first position
-    let dist = distanceLocLoc(aberdeen.location, firstPosition.location);
+    var dist = distanceLocLoc(aberdeen.location, firstPosition.location);
     console.log(firstPosition);
     console.log("firstPosition.location: "+firstPosition.location);
     console.log(`${vessel.Name} was ${dist | 0}m away from ${aberdeen.town} on the ${firstRecvTime}.`);
 
     // How to get all the position of the vessel around aberdeen
     // as of how to make a geospatial request
-    let positionsNearaberdeen = await cPositions.find({
+    var positionsNearaberdeen = cPositions.find({
         MMSI: vessel.MMSI,
         location: {
             $nearSphere: {
@@ -82,9 +89,5 @@ function distanceLocLoc(loc1, loc2) {
     console.log(`Vessel ${vessel.Name} was detected ${positionsNearaberdeen.length} times 10000m around Aberdeen during the month of ${moment(firstPosition.RecvTime).format('MMMM YYYY')}.`);
 
     // here is some sanity check:
-    let check = positionsNearaberdeen.map((p) => distanceLocLoc(p.location, aberdeen.location)).filter((p) => p > 10000).length
-    console.log(`Should be 0: ${check}`)
-
-    // close the client so that the script exits
-    client.close()
-})()
+    var check = positionsNearaberdeen.map((p) => distanceLocLoc(p.location, aberdeen.location)).filter((p) => p > 10000).length;
+    console.log(`Should be 0: ${check}`);

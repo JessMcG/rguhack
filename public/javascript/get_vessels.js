@@ -6,18 +6,18 @@ function get(){
 
   //using code from index.js to initialise database connection
   const client = await MongoClient.connect('mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais');
-  const db = client.db('hackais');
+  const db = client.database('hackais');
   const cVessels = db.collection('vessels');
   const cPositions = db.collection('positions');
   const cTowns = db.collection('towns');
 
   //Get all vessels from Database
-  let vessels = await cVessels.find().toArray();
-  console.log(`All vessels quantity: ${vessels.length}`);
-  //return vessels;
+  var vessels = cVessels.find().toArray();
+  console.log("All vessels quantity: "+vessels.length);
 
+  return vessels;
 
-  for (var i = 0; i < vessels.length; i++) {
+  /*for (var i = 0; i < vessels.length; i++) {
   var boat_length = vessels[i].length;
   var boat_width = vessels[i].width;
 
@@ -33,5 +33,5 @@ function get(){
   //plot vessel on map
   var boat = L.circle([boat_lat, boat_long], {radius: boat_length}).addTo(mymap);
 
-  }
+}*/
 }
