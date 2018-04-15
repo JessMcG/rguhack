@@ -90,35 +90,46 @@ class Map {
 	}
 };
 
-requirejs(["node_modules/mongodb/index.js"], function (mongodb) {
-	// Thanks to https://stackoverflow.com/a/21623206
-	// Distance returned is in m
-	function distance(lat1, lon1, lat2, lon2) {
-		var p = 0.017453292519943295; // Math.PI / 180
-		var c = Math.cos;
-		var a = 0.5 - c((lat2 - lat1) * p) / 2 +
-			c(lat1 * p) * c(lat2 * p) *
-			(1 - c((lon2 - lon1) * p)) / 2;
+// Thanks to https://stackoverflow.com/a/21623206
+// Distance returned is in m
+function distance(lat1, lon1, lat2, lon2) {
+	var p = 0.017453292519943295; // Math.PI / 180
+	var c = Math.cos;
+	var a = 0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
 
-		return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+	return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
+
+function distanceLocLoc(loc1, loc2) {
+	return distance(loc1[1], loc1[0], loc2[1], loc2[0]);
+}
+
+require(
+	['../node_modules/bson/index', '../node_modules/mongodb-core/index'],
+	function (bson) {
+		require(
+			['../node_modules/mongodb/index', '../node_modules/lodash/lodash', '../node_modules/moment/moment'],
+			function (bson, mongodbCore, mongodb, lodash, moment) {
+				console.log(bson);
+				console.log(mongodbCore);
+				console.log(mongodb);
+				console.log(lodash);
+				console.log(moment);
+				(async () => {
+					const client = await mongodb.MongoClient.connect('mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais');
+					const db = client.db('hackais');
+					console.log(db);
+					client.close()
+				})()
+			},
+			function (err) {
+				console.error('ERROR: ', err.requireType);
+				console.error('MODULES: ', err.requireModules);
+			}
+		);
+	},
+	function (err) {
+		console.error('ERROR: ', err.requireType);
+		console.error('MODULES: ', err.requireModules);
 	}
-
-	// a wrapper to facilitate usage with [lng, lat] locations
-	function distanceLocLoc(loc1, loc2) {
-		return distance(loc1[1], loc1[0], loc2[1], loc2[0]);
-	}
-
-	(async () => {
-		const client = await MongoClient.connect('mongodb://hackuser:hackuser@csdm-mongodb.rgu.ac.uk/hackais');
-		const db = client.db('hackais');
-		console.log(db);
-
-		// close the client so that the script exits
-		client.close()
-	})()
-});
-/*
-	const MongoClient = require('node_modules/mongodb').MongoClient;
-	const _ = require('node_modules/lodash');
-	const moment = require('node_modules/moment');
-*/
+);
