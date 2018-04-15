@@ -2,7 +2,6 @@ const MongoClient = require('mongodb').MongoClient;
 const _ = require('lodash');
 const moment = require('moment');
 
-
 // Thanks to https://stackoverflow.com/a/21623206
 // Distance returned is in m
 function distance(lat1, lon1, lat2, lon2) {
